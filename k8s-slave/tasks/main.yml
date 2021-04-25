@@ -1,0 +1,71 @@
+---
+# tasks file for k8s-slave
+
+- name: "Configuring yum repository"
+  yum_repository:
+    name: kubernetes
+    description: kubernetes.repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-e17-\$basearch
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+    exclude: kubelet kubeadm kubectl
+
+- name: "Installing Softwares"
+  yum:
+    name: "{{ item }}"
+    state: present
+    disable_excludes: kubernetes
+  loop:
+    - iproute-tc
+    - kubelet
+    - kubeadm
+    - kubectl
+    - docker
+
+- name: "Starting services"
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - docker
+    - kubelet
+
+- name: "Pulling images"
+  shell: "kubeadm config images pull"
+  changed_when: false
+
+- name: "Changing driver in docker"
+  copy:
+    content: |
+            {
+               "exec-opts": [native.cgroupdriver=systemd]
+            }
+    dest: /etc/docker/daemon.json
+  register: x
+
+- name: "Restarting docker"
+  service:
+    name: docker
+    state: restarted 
+  when: x.changed == true
+
+- name: "Updating config file"
+  copy: 
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+            net.bridge.bridge-nf-call-ip6tables = 1
+            net.bridge.bridge-nf-call-iptables = 1
+
+- name: "Chnaging parameters for kernel"
+  command: "sysctl --system"
+
+- name: "Join to master"
+  shell: "{{ hostvars['linktojoin']['link'] }}"
+  ignore_errors: yes
+  register: x
+
+- debug:
+    var: x.stdout_lines 

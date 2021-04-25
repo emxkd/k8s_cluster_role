@@ -1,0 +1,8 @@
+imageId: "ami-0bcf5425cdc1d8a85"
+region: "ap-south-1"
+Subnet: "subnet-1dabd251"
+key_name: "krole"
+sg_name: "k8s_sg"
+securityGroupDescription: "sg for k8s"
+vpcId: "vpc-f78b699c"
+inventoryLocation: "/ansible-ws/k8s_roles/ip.txt"

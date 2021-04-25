@@ -1,0 +1,13 @@
+[masterNode]
+65.2.122.18 ansible_user=ec2-user ansible_connection=ssh
+13.233.20.255 ansible_user=ec2-user ansible_connection=ssh
+13.233.20.255 ansible_user=ec2-user ansible_connection=ssh
+13.233.20.255 ansible_user=ec2-user ansible_connection=ssh
+13.233.20.255 ansible_user=ec2-user ansible_connection=ssh
+13.233.20.255 ansible_user=ec2-user ansible_connection=ssh
+
+[workerNode]
+52.66.80.8 ansible_user=ec2-user ansible_connection=ssh
+13.235.81.38 ansible_user=ec2-user ansible_connection=ssh
+65.1.130.131 ansible_user=ec2-user ansible_connection=ssh
+65.0.178.226 ansible_user=ec2-user ansible_connection=ssh
