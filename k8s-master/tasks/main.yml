@@ -1,19 +1,32 @@
 ---
 # tasks file for k8s-master
 
+- name: "Installing docker"
+  package:
+    name: docker
+    state: present
+
+- name: "Starting docker services"
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
 - name: "Configuring yum repository"
   yum_repository:
     name: kubernetes
     description: kubernetes.repo
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-e17-\$basearch
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
     enabled: yes
     gpgcheck: yes
     repo_gpgcheck: yes
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+    gpgkey: >-
+            https://packages.cloud.google.com/yum/doc/yum-key.gpg  
+            https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     exclude: kubelet kubeadm kubectl
 
 - name: "Installing Softwares"
-  yum:
+  package:
     name: "{{ item }}"
     state: present
     disable_excludes: kubernetes
@@ -22,16 +35,12 @@
     - kubelet
     - kubeadm
     - kubectl
-    - docker
-
+    
 - name: "Starting services"
   service:
-    name: "{{ item }}"
+    name: "kubelet"
     state: started
     enabled: yes
-  loop:
-    - docker
-    - kubelet
 
 - name: "Pulling images"
   shell: "kubeadm config images pull"
@@ -40,7 +49,7 @@
   copy:
     content: |
             {
-               "exec-opts": [native.cgroupdriver=systemd]
+               "exec-opts": ["native.cgroupdriver=systemd"]
             }
     dest: /etc/docker/daemon.json
   register: x
@@ -70,14 +79,11 @@
 - name: "copy admin file"
   copy:
     remote_src: yes
-    src: /etc/kubernets/admin.conf
+    src: /etc/kubernetes/admin.conf
     dest: $HOME/.kube/config
 
 - name: "Change owner of .kube/config"
-  file:
-    path: $HOME/.kube/config
-    owner: "{{ user-id }}"
-    group: "{{ group-id }}"
+  shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config" 
 
 - name: "flannel install"
   command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -88,10 +94,14 @@
   register: token
   ignore_errors: yes
 
-- debug:
-    var: token.stdout_lines
-    register: token 
+- name: "Storing Token"
+  blockinfile:
+    path: /root/joink8scluster.yml
+    create: yes
+    block: |
+            joink8scluster: {{ token.stdout }}
 
-- add_host:
-    name: "linktojoin"
-    link: "{{ token['stdout'] }}"  
+- fetch:
+    src: /root/joink8scluster.yml
+    dest: /ansible-ws/k8s_roles/k8s-slave/vars/main.yml
+    flat: yes
