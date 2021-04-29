@@ -1,15 +1,28 @@
 ---
 # tasks file for k8s-slave
 
+- name: "Installing docker"
+  package:
+    name: docker
+    state: present
+
+- name: "Starting docker services"
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
 - name: "Configuring yum repository"
   yum_repository:
     name: kubernetes
     description: kubernetes.repo
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-e17-\$basearch
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
     enabled: yes
     gpgcheck: yes
     repo_gpgcheck: yes
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+    gpgkey: >-
+            https://packages.cloud.google.com/yum/doc/yum-key.gpg
+            https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     exclude: kubelet kubeadm kubectl
 
 - name: "Installing Softwares"
@@ -22,17 +35,13 @@
     - kubelet
     - kubeadm
     - kubectl
-    - docker
 
 - name: "Starting services"
   service:
-    name: "{{ item }}"
+    name: "kubelet"
     state: started
     enabled: yes
-  loop:
-    - docker
-    - kubelet
-
+  
 - name: "Pulling images"
   shell: "kubeadm config images pull"
   changed_when: false
@@ -41,16 +50,16 @@
   copy:
     content: |
             {
-               "exec-opts": [native.cgroupdriver=systemd]
+               "exec-opts": ["native.cgroupdriver=systemd"]
             }
     dest: /etc/docker/daemon.json
-  register: x
+  register: z
 
 - name: "Restarting docker"
   service:
     name: docker
     state: restarted 
-  when: x.changed == true
+  when: z.changed == true
 
 - name: "Updating config file"
   copy: 
@@ -62,10 +71,6 @@
 - name: "Chnaging parameters for kernel"
   command: "sysctl --system"
 
-- name: "Join to master"
-  shell: "{{ hostvars['linktojoin']['link'] }}"
+- name: "Join to cluster"
+  shell: "{{ joink8scluster }}"
   ignore_errors: yes
-  register: x
-
-- debug:
-    var: x.stdout_lines 
