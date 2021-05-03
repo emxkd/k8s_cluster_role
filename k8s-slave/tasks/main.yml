@@ -68,7 +68,7 @@
             net.bridge.bridge-nf-call-ip6tables = 1
             net.bridge.bridge-nf-call-iptables = 1
 
-- name: "Chnaging parameters for kernel"
+- name: "Changing parameters for kernel"
   command: "sysctl --system"
 
 - name: "Create file"
