@@ -67,7 +67,7 @@
             net.bridge.bridge-nf-call-ip6tables = 1
             net.bridge.bridge-nf-call-iptables = 1
 
-- name: "Initializing mAaster"
+- name: "Initializing master"
   shell: "kubeadm init --pod-network-cidr={{ cidr }} --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem --node-name=master"
   ignore_errors: yes
 
