@@ -99,9 +99,9 @@
     path: /root/joink8scluster.yml
     create: yes
     block: |
-            joink8scluster: {{ token.stdout }}
+            {{ token.stdout }}
 
 - fetch:
     src: /root/joink8scluster.yml
-    dest: /ansible-ws/k8s_roles/k8s-slave/vars/main.yml
+    dest: /tmp/token
     flat: yes
