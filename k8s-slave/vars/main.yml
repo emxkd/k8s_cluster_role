@@ -1,5 +1,2 @@
 ---
 # vars file for k8s-slave
-# BEGIN ANSIBLE MANAGED BLOCK
-joink8scluster: kubeadm join 172.31.15.176:6443 --token enzg8d.0a8kjci9tu2bmaaw --discovery-token-ca-cert-hash sha256:afa636eb3f0c26b56f4801a94c266a7b973b86a434a1418f9a59624f212753c4 
-# END ANSIBLE MANAGED BLOCK
