@@ -73,9 +73,14 @@
 
 - name: "Create file"
   file:
-    path: /tmp/token
+    path: /root/token
     state: touch
+    mode: '0644'
+    
+- copy:
+    src: /tmp/token
+    dest: /root/token
     
 - name: "Join to cluster"
-  shell: "bash /tmp/token"
+  shell: "bash /root/token"
   ignore_errors: yes
