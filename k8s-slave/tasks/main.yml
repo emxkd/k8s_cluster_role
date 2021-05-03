@@ -71,6 +71,11 @@
 - name: "Chnaging parameters for kernel"
   command: "sysctl --system"
 
+- name: "Create file"
+  file:
+    path: /tmp/token
+    state: touch
+    
 - name: "Join to cluster"
-  shell: "{{ joink8scluster }}"
+  shell: "bash /tmp/token"
   ignore_errors: yes
