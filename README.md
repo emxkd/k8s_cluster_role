@@ -25,8 +25,8 @@ ansible-vault create credentials.yml
 And inside this file input AWS access_key and secret_key in the following format:
 
 ```
-aws_access_key_id: <access_key>
-aws_secret_access_key: <secret_key>
+access_key: <access_key>
+secret_key: <secret_key>
 ```
 
 First playbook will create instances in AWS and we can run the playbook using the command:
@@ -43,3 +43,4 @@ ansible-playbook final.yml
 
 That's all folks... Thankyou for reading :)
 
+I would also like to thank Prithviraj Singh for his help and guidance throughout this project ^_^
