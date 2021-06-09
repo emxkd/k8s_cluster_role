@@ -68,7 +68,7 @@
             net.bridge.bridge-nf-call-iptables = 1
 
 - name: "Initializing master"
-  shell: "kubeadm init --pod-network-cidr={{ cidr }} --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem --node-name=master"
+  shell: "kubeadm init --pod-network-cidr={{ cidr }} --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem --ignore-preflight-errors=FileContent--proc-sys-net-bridge-bridge-nf-call-iptables"
   ignore_errors: yes
 
 - name: "Creating .kube directory"
