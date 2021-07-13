@@ -1,0 +1,7 @@
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=Divya7
+resources:
+  - mysql.yml
+  - wordpress.yml

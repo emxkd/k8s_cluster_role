@@ -1,0 +1,16 @@
+---
+# tasks file for wp
+
+- name: Creating directory
+  file:
+    path: /root/files
+    state: directory
+    mode: '0755'
+
+- name: Copying files to master node.
+  copy:
+        src: "/ansible-ws/k8s_wp/wp/files/"
+        dest: /root/files/
+
+- name: Creating multi_tier application setup with yaml files.
+  command: "kubectl apply -k /root/files/"
